@@ -1,40 +1,30 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
+async function sendMessage() {
+  const userInputField = document.getElementById("user-input");
+  const userInput = userInputField.value.trim();
+  const chatBox = document.getElementById("chat-box");
 
-.chat-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+  if (!userInput) return;
 
-#chat-box {
-  height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+  // Show user message
+  chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+  userInputField.value = "";
 
-#user-input {
-  width: 70%;
-  padding: 10px;
-}
+  try {
+    const response = await fetch("https://umar-y55h.onrender.com/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: userInput })
+    });
 
-button {
-  width: 25%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
+    const data = await response.json();
+    const botReply = data.response || "No response from server.";
+
+    chatBox.innerHTML += `<p><strong>Bot:</strong> ${botReply}</p>`;
+  } catch (error) {
+    chatBox.innerHTML += `<p><strong>Bot:</strong> Error: ${error.message}</p>`;
+  }
+
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
